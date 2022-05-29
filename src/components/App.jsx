@@ -12,10 +12,8 @@ import Register from "./Register.jsx";
 import ProtectedRoute from "./ProtectedRoute";
 import InfoTooltip from "./InfoTooltip.jsx";
 import * as mestoAuth from "../utils/mestoAuth";
-
 import success from "../images/success.svg";
 import fail from "../images/fail.svg";
-
 import { api } from "../utils/api";
 import { CurrentUserContext } from "../contexts/CurrentUserContext.js";
 import { Switch, Redirect, Route } from "react-router-dom";
@@ -33,9 +31,11 @@ function App() {
   const [isInfoTooltipPopupOpen, setIsInfoTooltipPopupOpen] = useState(false);
   const [userData, setUserData] = useState();
   const history = useHistory();
+  
 
   useEffect(() => {
-    Promise.all([api.getProfile(), api.getInitialCards()])
+    if (loggedIn) {
+      Promise.all([api.getProfile(), api.getInitialCards()])
       .then(([useData, card]) => {
         setCurrentUser(useData);
         setCards(card);
@@ -43,7 +43,8 @@ function App() {
       .catch((err) => {
         console.log("Error: ", err);
       });
-  }, []);
+    }
+  }, [loggedIn]);
 
   function handleEditAvatarClick() {
     setIsEditAvatarPopupOpen(true);
@@ -183,6 +184,8 @@ function App() {
           setLoggedIn(true);
           setUserData(userData);
         }
+      }).catch((err) => {
+        console.log(err);
       });
     }
   };
@@ -208,7 +211,7 @@ function App() {
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page">
         <Switch>
-          <ProtectedRoute path="/main" loggedIn={loggedIn}>
+          <ProtectedRoute exact path="/" loggedIn={loggedIn}>
             <Header
               onClick={signOut}
               nameLink="Выйти"
@@ -225,7 +228,7 @@ function App() {
               onCardDelete={handleCardDelete}
             />
           </ProtectedRoute>
-          <Route exact path="/login">
+          <Route path="/login">
             <Header toLink="/register" nameLink="Регистрация" />
             <div className="loginContainer">
               <Login handleLogin={handleLogin} />
@@ -237,8 +240,8 @@ function App() {
               <Register handleRegister={handleRegister} />
             </div>
           </Route>
-          <Route exact path="/">
-            {loggedIn ? <Redirect to="/main" /> : <Redirect to="/login" />}
+          <Route  path="/">
+            {loggedIn ? <Redirect to="/" /> : <Redirect to="/login" />}
           </Route>
         </Switch>
 

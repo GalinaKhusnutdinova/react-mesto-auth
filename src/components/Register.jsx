@@ -31,7 +31,6 @@ export default function Register({ handleRegister }) {
             method="get"
             name="login"
             className="login__form"
-            noValidate
             onSubmit={handleSubmit}
           >
             <label className="login__label">

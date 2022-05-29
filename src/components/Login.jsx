@@ -33,7 +33,6 @@ export default function Login({ handleLogin }) {
             method="get"
             name="login"
             className="login__form"
-            noValidate
             onSubmit={handleSubmit}
           >
             <label className="login__label">
